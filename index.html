@@ -54,7 +54,7 @@
         .kanji-item {
             font-family: 'Yuji Boku', serif;
             font-size: 6.6rem;
-            /* TRIPLO (3X) */
+            /* 3X */
             color: rgba(0, 0, 0, 0.9);
             text-shadow: 0.5px 0px 0px rgba(0, 0, 0, 0.8);
             filter: blur(0.2px);
@@ -70,7 +70,7 @@
 
         .sub-titulo {
             font-size: 1.1rem;
-            /* METADE (0.5X) */
+            /* 0.5X */
             font-family: 'Playfair Display', serif;
             color: rgba(0, 0, 0, 0.4);
             margin-top: 10px;
@@ -99,7 +99,7 @@
         rt {
             font-family: 'Playfair Display', serif;
             font-size: 1.1rem;
-            /* METADE (0.5X) */
+            /* 0.5X */
             color: #1a331a;
             opacity: 0;
             transform: translateY(10px);
@@ -120,7 +120,7 @@
 
             .mensagem {
                 font-size: 1.8rem;
-                /* BASE (X) - REDUZIDO PARA FICAR ENXUTO */
+                /* X ENXUTO */
                 margin-top: 15px;
                 max-width: 90%;
                 line-height: 1.1;
@@ -128,13 +128,13 @@
 
             .kanji-item {
                 font-size: 5.4rem;
-                /* TRIPLO (3X de 1.8) */
+                /* 3X */
             }
 
             .sub-titulo,
             rt {
                 font-size: 0.9rem;
-                /* METADE (0.5X de 1.8) */
+                /* 0.5X */
                 letter-spacing: 4px;
             }
         }
@@ -161,9 +161,7 @@
                 <ruby class="kanji-item">に<rt>Ju</rt></ruby>
             </span>
         </div>
-
         <div class="sub-titulo">Melhoras, Ju</div>
-
         <p class="mensagem">
             Espero que se recupere logo, minha amiga.
             A aula nao e a mesma coisa sem ti.
@@ -212,8 +210,7 @@
         function resizeDragon() {
             if (!dragon) return;
             const isMobile = window.innerWidth < 480;
-            // AUMENTADO APENAS NO MOBILE: de 25 para 40
-            const targetSize = isMobile ? 40 : 55;
+            const targetSize = isMobile ? 40 : 65;
             const box = new THREE.Box3().setFromObject(dragon);
             const size = box.getSize(new THREE.Vector3());
             const scale = targetSize / Math.max(size.x, size.y, size.z);
@@ -223,10 +220,13 @@
             dragon.position.sub(center.multiplyScalar(scale));
         }
 
-        const controls = new OrbitControls(camera, document.body);
+        const controls = new OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.4;
+
+        // --- DESATIVADO MOVIMENTO COM BOTÃO DIREITO ---
+        controls.enablePan = false;
 
         function animate() {
             requestAnimationFrame(animate);
