@@ -4,149 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Melhoras, Amiga!</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Yuji+Boku&family=Nanum+Brush+Script&family=Playfair+Display:ital@1&display=swap"
-        rel="stylesheet">
-
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #b2d8b2;
-            background-image: url("fundo.jpg");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            background-blend-mode: multiply;
-            height: 100vh;
-            width: 100vw;
-        }
-
-        #overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            pointer-events: none;
-            z-index: 2;
-        }
-
-        /* --- REGRAS DE PROPORÇÃO PC --- */
-        .mensagem {
-            font-size: 2.2rem;
-            /* BASE (X) */
-            max-width: 650px;
-            font-family: 'Nanum Brush Script', cursive;
-            color: rgba(0, 0, 0, 0.7);
-            margin-top: 25px;
-            line-height: 1.2;
-            padding: 0 40px;
-        }
-
-        .kanji-item {
-            font-family: 'Yuji Boku', serif;
-            font-size: 6.6rem;
-            /* 3X */
-            color: rgba(0, 0, 0, 0.9);
-            text-shadow: 0.5px 0px 0px rgba(0, 0, 0, 0.8);
-            filter: blur(0.2px);
-            transition: all 0.3s ease;
-            display: inline-block;
-            pointer-events: auto;
-        }
-
-        .kanji-item:hover {
-            transform: scale(1.15) translateY(-5px);
-            color: #000;
-        }
-
-        .sub-titulo {
-            font-size: 1.1rem;
-            /* 0.5X */
-            font-family: 'Playfair Display', serif;
-            color: rgba(0, 0, 0, 0.4);
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-            font-style: italic;
-        }
-
-        .kanji-box {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            max-width: 95vw;
-        }
-
-        .kanji-pair {
-            white-space: nowrap;
-            display: inline-block;
-        }
-
-        ruby {
-            ruby-position: over;
-        }
-
-        rt {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            /* 0.5X */
-            color: #1a331a;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-            font-style: italic;
-        }
-
-        .kanji-item:hover rt {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* --- REGRAS MOBILE (< 480px) --- */
-        @media (max-width: 480px) {
-            body {
-                background-position: left center;
-            }
-
-            .mensagem {
-                font-size: 1.8rem;
-                /* X ENXUTO */
-                margin-top: 15px;
-                max-width: 90%;
-                line-height: 1.1;
-            }
-
-            .kanji-item {
-                font-size: 5.4rem;
-                /* 3X */
-            }
-
-            .sub-titulo,
-            rt {
-                font-size: 0.9rem;
-                /* 0.5X */
-                letter-spacing: 4px;
-            }
-        }
-
-        canvas {
-            display: block;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <title>3D Objeto treino</title>
 </head>
 
 <body>
@@ -161,11 +20,7 @@
                 <ruby class="kanji-item">に<rt>Ju</rt></ruby>
             </span>
         </div>
-        <div class="sub-titulo">Melhoras, Ju</div>
-        <p class="mensagem">
-            Espero que se recupere logo, minha amiga.
-            A aula nao e a mesma coisa sem ti.
-        </p>
+
     </div>
 
     <script type="importmap">
@@ -175,73 +30,9 @@
                 "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
             }
         }
-    </script>
+        </script>
 
-    <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 60, 20);
-
-        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        document.body.appendChild(renderer.domElement);
-
-        const dragonMat = new THREE.MeshBasicMaterial({
-            color: 0x000000,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.15
-        });
-
-        let dragon;
-        const loader = new GLTFLoader();
-        loader.load('./chinese_dragon.glb', (gltf) => {
-            dragon = gltf.scene;
-            dragon.traverse(n => { if (n.isMesh) n.material = dragonMat; });
-            resizeDragon();
-            scene.add(dragon);
-        });
-
-        function resizeDragon() {
-            if (!dragon) return;
-            const isMobile = window.innerWidth < 480;
-            const targetSize = isMobile ? 40 : 65;
-            const box = new THREE.Box3().setFromObject(dragon);
-            const size = box.getSize(new THREE.Vector3());
-            const scale = targetSize / Math.max(size.x, size.y, size.z);
-            dragon.scale.set(scale, scale, scale);
-            const center = box.getCenter(new THREE.Vector3());
-            dragon.position.set(0, 0, 0);
-            dragon.position.sub(center.multiplyScalar(scale));
-        }
-
-        const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.4;
-
-        // --- DESATIVADO MOVIMENTO COM BOTÃO DIREITO ---
-        controls.enablePan = false;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            resizeDragon();
-        });
-    </script>
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
