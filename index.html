@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parabéns pela Formatura!</title>
+    <title>Melhoras!</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Yuji+Boku&family=Nanum+Brush+Script&family=Playfair+Display:ital@1&display=swap"
         rel="stylesheet">
@@ -43,19 +43,18 @@
             pointer-events: auto;
             display: inline-block;
             white-space: nowrap;
-            /* APROXIMAÇÃO HORIZONTAL: Aumentei o valor negativo para ficarem mais perto */
             letter-spacing: -2.5vw;
         }
 
         .kanji-item {
             font-family: 'Yuji Boku', serif;
-            font-size: 9vw;
+            font-size: 15vw;
+            /* Maior no mobile */
             color: rgba(0, 0, 0, 0.9);
             text-shadow: 0.5px 0px 0px rgba(0, 0, 0, 0.8);
             filter: blur(0.2px);
             transition: all 0.3s ease;
             display: inline-block;
-            /* Reseta o espaçamento interno para não herdar o negativo do box */
             letter-spacing: normal;
         }
 
@@ -65,7 +64,8 @@
 
         rt {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1vw;
+            font-size: 3vw;
+            /* Ajustado para mobile */
             color: #1a331a;
             opacity: 0;
             transform: translateY(10px);
@@ -85,22 +85,46 @@
 
         .sub-titulo {
             font-family: 'Playfair Display', serif;
-            font-size: 1.2vw;
+            font-size: 4vw;
+            /* Ajustado para mobile */
             color: rgba(0, 0, 0, 0.4);
             margin-top: -5px;
             text-transform: uppercase;
-            letter-spacing: 10px;
+            letter-spacing: 5px;
             font-style: italic;
         }
 
         .mensagem {
-            max-width: 500px;
+            max-width: 90%;
+            /* Ocupa quase tudo no mobile para não cortar */
             font-family: 'Nanum Brush Script', cursive;
-            font-size: 1.8rem;
+            font-size: 2.2rem;
+            /* Texto maior no mobile */
             color: rgba(0, 0, 0, 0.7);
             margin-top: 25px;
             line-height: 1.2;
-            padding: 0 40px;
+            padding: 0 10px;
+        }
+
+        /* MEDIA QUERY PARA DESKTOP - VOLTA AO PADRÃO ORIGINAL */
+        @media (min-width: 768px) {
+            .kanji-item {
+                font-size: 9vw;
+            }
+
+            rt {
+                font-size: 1.1vw;
+            }
+
+            .sub-titulo {
+                font-size: 1.2vw;
+                letter-spacing: 10px;
+            }
+
+            .mensagem {
+                font-size: 1.8rem;
+                max-width: 500px;
+            }
         }
 
         canvas {
@@ -117,21 +141,17 @@
 
     <div id="overlay">
         <div class="kanji-box">
-            <ruby class="kanji-item">卒<rt>Muito</rt></ruby>
-            <ruby class="kanji-item">業<rt>Obrigado</rt></ruby>
-            <ruby class="kanji-item">お<rt>Por</rt></ruby>
-            <ruby class="kanji-item">め<rt>Me</rt></ruby>
-            <ruby class="kanji-item">で<rt>Acompanhar</rt></ruby>
-            <ruby class="kanji-item">と<rt>Nessa</rt></ruby>
-            <ruby class="kanji-item">う<rt>Jornada</rt></ruby>
+            <ruby class="kanji-item">お<rt>Espero</rt></ruby>
+            <ruby class="kanji-item">大<rt>Que</rt></ruby>
+            <ruby class="kanji-item">事<rt>Se</rt></ruby>
+            <ruby class="kanji-item">に<rt>Recupere</rt></ruby>
         </div>
 
-        <div class="sub-titulo">Congratulations</div>
+        <div class="sub-titulo">Melhoras, Ju</div>
 
         <p class="mensagem">
-            Deploy finalizado com sucesso. Que seu novo ciclo não tenha bugs,
-            o stacktrace seja sempre limpo e seu crescimento escale infinitamente.
-            Parabéns por compilar essa vitória e dar um merge na vida profissional!
+            Espero que se recupere logo, minha amiga.
+            A aula nao e a mesma coisa sem ti.
         </p>
     </div>
 
@@ -155,7 +175,7 @@
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setPixelRatio(1);
+        renderer.setPixelRatio(window.devicePixelRatio);
         document.body.appendChild(renderer.domElement);
 
         const dragonMat = new THREE.MeshBasicMaterial({
@@ -165,19 +185,30 @@
             opacity: 0.15
         });
 
+        let dragon;
         const loader = new GLTFLoader();
         loader.load('./chinese_dragon.glb', (gltf) => {
-            const dragon = gltf.scene;
+            dragon = gltf.scene;
             dragon.traverse(n => { if (n.isMesh) n.material = dragonMat; });
+            resizeDragon();
+            scene.add(dragon);
+        });
+
+        function resizeDragon() {
+            if (!dragon) return;
+            const isMobile = window.innerWidth < 768;
+            // No mobile o tamanho base é 30 (menor), no desktop é 55 (original)
+            const targetSize = isMobile ? 30 : 55;
 
             const box = new THREE.Box3().setFromObject(dragon);
-            const scale = 55 / Math.max(box.getSize(new THREE.Vector3()).x, 55);
+            const size = box.getSize(new THREE.Vector3());
+            const scale = targetSize / Math.max(size.x, size.y, size.z);
             dragon.scale.set(scale, scale, scale);
 
             const center = box.getCenter(new THREE.Vector3());
+            dragon.position.set(0, 0, 0);
             dragon.position.sub(center.multiplyScalar(scale));
-            scene.add(dragon);
-        });
+        }
 
         const controls = new OrbitControls(camera, document.body);
         controls.enableDamping = true;
@@ -198,6 +229,7 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
+            resizeDragon();
         });
     </script>
 </body>
