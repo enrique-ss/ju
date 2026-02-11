@@ -5,13 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Parabéns pela Formatura!</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Yuji+Boku&family=Nanum+Brush+Script&family=Playfair+Display:ital@1&display=swap"
+        rel="stylesheet">
+
     <style>
         body {
             margin: 0;
             padding: 0;
             overflow: hidden;
             background-color: #b2d8b2;
-            font-family: 'serif', serif;
+            background-image: url("fundo.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-blend-mode: multiply;
+            height: 100vh;
+            width: 100vw;
         }
 
         #overlay {
@@ -26,33 +36,71 @@
             align-items: center;
             text-align: center;
             pointer-events: none;
-            z-index: 10;
+            z-index: 2;
         }
 
-        .kanji {
-            font-size: 10vw;
-            color: rgba(0, 0, 0, 0.8);
-            margin: 0;
-            line-height: 1.2;
-            letter-spacing: 15px;
+        .kanji-box {
+            pointer-events: auto;
+            display: inline-block;
+            white-space: nowrap;
+            /* APROXIMAÇÃO HORIZONTAL: Aumentei o valor negativo para ficarem mais perto */
+            letter-spacing: -2.5vw;
+        }
+
+        .kanji-item {
+            font-family: 'Yuji Boku', serif;
+            font-size: 9vw;
+            color: rgba(0, 0, 0, 0.9);
+            text-shadow: 0.5px 0px 0px rgba(0, 0, 0, 0.8);
+            filter: blur(0.2px);
+            transition: all 0.3s ease;
+            display: inline-block;
+            /* Reseta o espaçamento interno para não herdar o negativo do box */
+            letter-spacing: normal;
+        }
+
+        ruby {
+            ruby-position: over;
+        }
+
+        rt {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1vw;
+            color: #1a331a;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            font-style: italic;
+        }
+
+        .kanji-item:hover {
+            transform: scale(1.15) translateY(-5px);
+            color: #000;
+        }
+
+        .kanji-item:hover rt {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .sub-titulo {
-            font-size: 1.5vw;
-            color: rgba(0, 0, 0, 0.5);
-            margin-top: 10px;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2vw;
+            color: rgba(0, 0, 0, 0.4);
+            margin-top: -5px;
             text-transform: uppercase;
-            letter-spacing: 12px;
+            letter-spacing: 10px;
+            font-style: italic;
         }
 
         .mensagem {
-            max-width: 550px;
-            font-size: 1.1rem;
+            max-width: 500px;
+            font-family: 'Nanum Brush Script', cursive;
+            font-size: 1.8rem;
             color: rgba(0, 0, 0, 0.7);
-            margin-top: 40px;
-            line-height: 1.8;
-            font-family: 'Segoe UI', sans-serif;
-            padding: 0 20px;
+            margin-top: 25px;
+            line-height: 1.2;
+            padding: 0 40px;
         }
 
         canvas {
@@ -68,13 +116,22 @@
 <body>
 
     <div id="overlay">
-        <h1 class="kanji">卒業おめでとう</h1>
-        <div class="sub-titulo">CONGRATULATIONS</div>
+        <div class="kanji-box">
+            <ruby class="kanji-item">卒<rt>Muito</rt></ruby>
+            <ruby class="kanji-item">業<rt>Obrigado</rt></ruby>
+            <ruby class="kanji-item">お<rt>Por</rt></ruby>
+            <ruby class="kanji-item">め<rt>Me</rt></ruby>
+            <ruby class="kanji-item">で<rt>Acompanhar</rt></ruby>
+            <ruby class="kanji-item">と<rt>Nessa</rt></ruby>
+            <ruby class="kanji-item">う<rt>Jornada</rt></ruby>
+        </div>
+
+        <div class="sub-titulo">Congratulations</div>
 
         <p class="mensagem">
-            Minha querida amiga, que seu sucesso voe tão alto quanto este dragão.
-            Sua formatura é apenas o início de uma jornada brilhante.
-            Orgulho de tudo o que você conquistou!
+            Deploy finalizado com sucesso. Que seu novo ciclo não tenha bugs,
+            o stacktrace seja sempre limpo e seu crescimento escale infinitamente.
+            Parabéns por compilar essa vitória e dar um merge na vida profissional!
         </p>
     </div>
 
@@ -92,11 +149,9 @@
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-        // --- CENA ---
         const scene = new THREE.Scene();
-
         const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        camera.position.set(0, 50, 15);
+        camera.position.set(0, 60, 20);
 
         const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -107,7 +162,7 @@
             color: 0x000000,
             wireframe: true,
             transparent: true,
-            opacity: 0.2
+            opacity: 0.15
         });
 
         const loader = new GLTFLoader();
@@ -116,28 +171,21 @@
             dragon.traverse(n => { if (n.isMesh) n.material = dragonMat; });
 
             const box = new THREE.Box3().setFromObject(dragon);
-            // Aumentei a escala de 30 para 45 para o dragão ficar maior
-            const scale = 45 / Math.max(box.getSize(new THREE.Vector3()).x, 45);
+            const scale = 55 / Math.max(box.getSize(new THREE.Vector3()).x, 55);
             dragon.scale.set(scale, scale, scale);
 
             const center = box.getCenter(new THREE.Vector3());
             dragon.position.sub(center.multiplyScalar(scale));
-
             scene.add(dragon);
         });
 
-        // --- CONTROLES ---
-        const controls = new OrbitControls(camera, renderer.domElement);
+        const controls = new OrbitControls(camera, document.body);
         controls.enableDamping = true;
-
-        // BLOQUEIOS SOLICITADOS:
-        controls.enablePan = false;   // Desativa o arraste com botão direito (Dragão sempre no centro)
-        controls.enableZoom = true;   // Permite aproximar com scroll
-        controls.enableRotate = true; // Permite girar com botão esquerdo
-
+        controls.enablePan = false;
+        controls.enableZoom = true;
         controls.target.set(0, 0, 0);
         controls.autoRotate = true;
-        controls.autoRotateSpeed = 0.5;
+        controls.autoRotateSpeed = 0.4;
 
         function animate() {
             requestAnimationFrame(animate);
