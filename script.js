@@ -40,7 +40,7 @@ loader.load('./chinese_dragon.glb', (gltf) => {
 function resizeDragon() {
     if (!dragon) return;
     const isMobile = window.innerWidth < 480;
-    const targetSize = isMobile ? 40 : 65;
+    const targetSize = isMobile ? 40 : 80;
 
     const box = new THREE.Box3().setFromObject(dragon);
     const size = box.getSize(new THREE.Vector3());
