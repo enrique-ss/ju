@@ -18,6 +18,7 @@
             background-image: url("fundo.jpg");
             background-size: cover;
             background-position: center;
+            /* No PC foca no centro */
             background-repeat: no-repeat;
             background-blend-mode: multiply;
             height: 100vh;
@@ -52,15 +53,20 @@
         }
 
         .kanji-item {
+            font-family: 'Yuji Boku', serif;
             font-size: 6.6rem;
             /* TRIPLO (3X) */
-            font-family: 'Yuji Boku', serif;
             color: rgba(0, 0, 0, 0.9);
             text-shadow: 0.5px 0px 0px rgba(0, 0, 0, 0.8);
             filter: blur(0.2px);
             transition: all 0.3s ease;
             display: inline-block;
-            letter-spacing: normal;
+            pointer-events: auto;
+        }
+
+        .kanji-item:hover {
+            transform: scale(1.15) translateY(-5px);
+            color: #000;
         }
 
         .sub-titulo {
@@ -68,17 +74,23 @@
             /* METADE (0.5X) */
             font-family: 'Playfair Display', serif;
             color: rgba(0, 0, 0, 0.4);
-            margin-top: -5px;
+            margin-top: 10px;
             text-transform: uppercase;
             letter-spacing: 10px;
             font-style: italic;
         }
 
         .kanji-box {
-            pointer-events: auto;
-            display: inline-block;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            max-width: 95vw;
+        }
+
+        .kanji-pair {
             white-space: nowrap;
-            letter-spacing: -1.5vw;
+            display: inline-block;
         }
 
         ruby {
@@ -87,7 +99,8 @@
 
         rt {
             font-family: 'Playfair Display', serif;
-            font-size: 1.1vw;
+            font-size: 1.1rem;
+            /* METADE (0.5X) */
             color: #1a331a;
             opacity: 0;
             transform: translateY(10px);
@@ -100,37 +113,29 @@
             transform: translateY(0);
         }
 
-        /* --- REGRAS DE PROPORÇÃO MOBILE (< 480px) --- */
+        /* --- REGRAS MOBILE (< 480px) --- */
         @media (max-width: 480px) {
             body {
                 background-position: left center;
+                /* IMAGEM COMEÇA DA ESQUERDA */
             }
 
             .mensagem {
-                font-size: 3rem;
+                font-size: 2.8rem;
                 /* BASE (X) */
-                max-width: 95%;
-                padding: 0 10px;
-                margin-top: 30px;
+                margin-top: 20px;
             }
 
             .kanji-item {
-                font-size: 9rem;
+                font-size: 8.4rem;
                 /* TRIPLO (3X) */
             }
 
-            .sub-titulo {
-                font-size: 1.5rem;
+            .sub-titulo,
+            rt {
+                font-size: 1.4rem;
                 /* METADE (0.5X) */
                 letter-spacing: 5px;
-            }
-
-            .kanji-box {
-                letter-spacing: -5vw;
-            }
-
-            rt {
-                font-size: 6vw;
             }
         }
 
@@ -145,13 +150,16 @@
 </head>
 
 <body>
-
     <div id="overlay">
         <div class="kanji-box">
-            <ruby class="kanji-item">お<rt>Espero</rt></ruby>
-            <ruby class="kanji-item">大<rt>Que</rt></ruby>
-            <ruby class="kanji-item">事<rt>Se</rt></ruby>
-            <ruby class="kanji-item">に<rt>Recupere</rt></ruby>
+            <span class="kanji-pair">
+                <ruby class="kanji-item">お<rt>Espero</rt></ruby>
+                <ruby class="kanji-item">大<rt>Que</rt></ruby>
+            </span>
+            <span class="kanji-pair">
+                <ruby class="kanji-item">事<rt>Se</rt></ruby>
+                <ruby class="kanji-item">に<rt>Recupere</rt></ruby>
+            </span>
         </div>
 
         <div class="sub-titulo">Get Well Soon</div>
@@ -205,12 +213,10 @@
             if (!dragon) return;
             const isMobile = window.innerWidth < 480;
             const targetSize = isMobile ? 25 : 55;
-
             const box = new THREE.Box3().setFromObject(dragon);
             const size = box.getSize(new THREE.Vector3());
             const scale = targetSize / Math.max(size.x, size.y, size.z);
             dragon.scale.set(scale, scale, scale);
-
             const center = box.getCenter(new THREE.Vector3());
             dragon.position.set(0, 0, 0);
             dragon.position.sub(center.multiplyScalar(scale));
@@ -218,9 +224,6 @@
 
         const controls = new OrbitControls(camera, document.body);
         controls.enableDamping = true;
-        controls.enablePan = false;
-        controls.enableZoom = true;
-        controls.target.set(0, 0, 0);
         controls.autoRotate = true;
         controls.autoRotateSpeed = 0.4;
 
