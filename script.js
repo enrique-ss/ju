@@ -5,7 +5,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 // Configuração da Cena
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.set(0, 60, 20);
+const initialZ = window.innerWidth > 480 ? 40 : 20;
+camera.position.set(0, 60, initialZ); camera.position.set(0, 60, 20);
 
 // Configuração do Renderizador
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -39,8 +40,10 @@ loader.load('./chinese_dragon.glb', (gltf) => {
 // Função para ajustar o tamanho e posição do dragão (Responsivo)
 function resizeDragon() {
     if (!dragon) return;
+
     const isMobile = window.innerWidth < 480;
-    const targetSize = isMobile ? 40 : 80;
+    // No Mobile continua 40. No PC, baixamos para 50 (estava 80) para dar efeito de zoom out.
+    const targetSize = isMobile ? 40 : 50;
 
     const box = new THREE.Box3().setFromObject(dragon);
     const size = box.getSize(new THREE.Vector3());
